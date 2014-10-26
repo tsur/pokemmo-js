@@ -13,19 +13,22 @@
     "email": "email@domain.com",
     "url": "http://bower.io/"
   },
-  "licenses": [{
-    "type": "MIT",
-    "url": "http://mit-license.org"
-  }],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://mit-license.org"
+    }
+  ],
   "devDependencies": {
     "grunt": "~0.4.1",
-    "grunt-contrib-qunit": "*",
-    "grunt-contrib-jshint": "*",
+    "grunt-contrib-clean": "*",
     "grunt-contrib-concat": "*",
+    "grunt-contrib-connect": "*",
+    "grunt-contrib-jshint": "*",
+    "grunt-contrib-qunit": "*",
+    "grunt-contrib-requirejs": "*",
     "grunt-contrib-uglify": "*",
     "grunt-contrib-watch": "*",
-    "grunt-contrib-clean": "*",
-    "grunt-contrib-requirejs": "*",
-    "grunt-contrib-connect": "*"
+    "grunt-remove-logging": "^0.2.0"
   }
 }

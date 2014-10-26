@@ -21,7 +21,7 @@ module.exports = function(grunt) {
         stripBanners: true
       },
       dist: {
-        src: ['bower_components/requirejs/require.js', '<%= concat.dist.dest %>'],
+        src: ['vendor/requirejs/require.js', '<%= concat.dist.dest %>'],
         dest: 'dist/require.js'
       },
     },
@@ -34,9 +34,9 @@ module.exports = function(grunt) {
         dest: 'dist/require.min.js'
       },
     },
-    qunit: {
-      files: ['test/**/*.html']
-    },
+    // qunit: {
+    //   files: ['test/**/*.html']
+    // },
     jshint: {
       gruntfile: {
         options: {
@@ -74,8 +74,8 @@ module.exports = function(grunt) {
     requirejs: {
       compile: {
         options: {
-          name: 'config',
-          mainConfigFile: 'app/config.js',
+          name: 'boot',
+          mainConfigFile: 'app/boot.js',
           out: '<%= concat.dist.dest %>',
           optimize: 'none'
         }
@@ -90,12 +90,12 @@ module.exports = function(grunt) {
       production: {
         options: {
           keepalive: true,
-          port: 8000,
+          port: 8001,
           middleware: function(connect, options) {
             return [
               // rewrite requirejs to the compiled version
               function(req, res, next) {
-                if (req.url === '/bower_components/requirejs/require.js') {
+                if (req.url === '/vendor/requirejs/require.js') {
                   req.url = '/dist/require.min.js';
                 }
                 next();
@@ -105,6 +105,13 @@ module.exports = function(grunt) {
             ];
           }
         }
+      }
+    },
+    removelogging: {
+      dist: {
+        src: '<%= concat.dist.dest %>',
+        dest: 'dist/require.js',
+        options: {}
       }
     }
   });
@@ -118,10 +125,12 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-requirejs');
   grunt.loadNpmTasks('grunt-contrib-connect');
+  grunt.loadNpmTasks("grunt-remove-logging");
 
   // Default task.
-  grunt.registerTask('default', ['jshint', 'qunit', 'clean', 'requirejs', 'concat', 'uglify']);
+  grunt.registerTask('default', ['jshint', 'clean', 'requirejs', 'concat', 'removelogging', 'uglify']);
   grunt.registerTask('preview', ['connect:development']);
-  grunt.registerTask('preview-live', ['default', 'connect:production']);
+  // grunt.registerTask('preview-live', ['default', 'connect:production']);
+  grunt.registerTask('preview-live', ['default', 'connect:development']);
 
 };
