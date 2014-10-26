@@ -1,0 +1,6 @@
+*~
+*.orig
+node_modules/
+vendor/
+temp/
+dist/

@@ -1,0 +1,13 @@
+{
+  "name": "pokemmo-ui",
+  "dependencies": {
+    "requirejs": "~2.1.5",
+    "jquery": ">= 1.8.0",
+    "qunit": "~1.11.0",
+    "lodash": "~2.2.0",
+    "processing": "~1.4.8",
+    "modernizr": "~2.8.3",
+    "kineticjs": "~5.1.0",
+    "PreloadJS": "*"
+  }
+}
