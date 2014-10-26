@@ -14,5 +14,7 @@ require.config({
 });
 
 if (!window.requireTestMode) {
-  require(['app']);
+  require(['config/polyfills'], function() {
+    require(['app']);
+  });
 }

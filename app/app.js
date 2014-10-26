@@ -1,7 +1,7 @@
 // to depend on a bower installed component:
 // define(['vendor/componentName/file'])
 
-define(['jquery', 'modules/game'], function($, Game) {
+define(['modules/main'], function(Game) {
 
   if ((navigator.userAgent.match(/iPhone/i)) || (navigator.userAgent.match(/iPod/i))) {
     window.addEventListener("load", function() {
@@ -12,5 +12,5 @@ define(['jquery', 'modules/game'], function($, Game) {
     });
   }
 
-  Game.init(document.getElementById('canvas'), document.getElementById('canvasContainer'));
+  Game.run(document.getElementById('canvas'), document.getElementById('canvasContainer'));
 });
