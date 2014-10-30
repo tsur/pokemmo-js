@@ -74,7 +74,6 @@ define(['jquery', 'config/init', './connection'], function($, settings, Connecti
         Main.container.style.position = "fixed";
         Main.container.style.marginTop = "-300px";
         Main.container.style.marginLeft = "-400px";
-
       }
 
       Main.container.width = Main.mapCacheCanvas.width = Main.tmpCanvas.width = Main.onScreenCanvas.width = Main.canvas.width;
@@ -98,9 +97,10 @@ define(['jquery', 'config/init', './connection'], function($, settings, Connecti
     Connection.setup();
     Renderer.setup();
     Chat.setup();
-    Game.state = GameState.ST_TITLE;
     TitleScreen.setup();
     TitleScreen.init();
+
+    Game.state = GameState.ST_TITLE;
 
     setInterval(Main.tick, 1000 / 30);
   };
