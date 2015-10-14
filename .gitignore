@@ -1,6 +1,17 @@
+node_modules
+
+# npm
+**/npm-debug.log
+
+# vagrant
+.vagrant
+
+# editors specific
+app/valo/
+**/.idea/
 *~
-*.orig
-node_modules/
-vendor/
-temp/
-dist/
+*.swp
+*.swo
+app/public/dist
+app/browserify-cache.json
+*DS_Store
