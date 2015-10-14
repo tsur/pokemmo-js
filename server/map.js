@@ -9,5 +9,4 @@ export default class Map {
         this.id = id;
     }
 
-
 }

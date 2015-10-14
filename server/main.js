@@ -3,7 +3,7 @@
 import Log from 'loglevel';
 import R from 'ramda';
 import * as Game from './game.js';
-import * as Connector from './connector.js';
+import * as dbConnector from './connector.js';
 
 class Main{
 
@@ -18,7 +18,8 @@ class Main{
             Log.setDefaultLevel(this.options.log);
         }
 
-        const start = R.compose(Connector.connect, Game.server, Game.init);
+        //const start = R.compose(dbConnector.connect, Game.server, Game.init);
+        const start = R.compose(Game.server, Game.init);
 
         start(this);
     }
