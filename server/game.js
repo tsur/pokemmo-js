@@ -8,6 +8,11 @@ import * as Const from './const.js';
 import Map from './map.js';
 import Client from './client.js';
 
+/**
+ * Loads all needed data
+ * @param game
+ * @returns {*}
+ */
 export function init(game){
 
     game.info('Initializing game');
@@ -53,6 +58,11 @@ export function init(game){
     return game;
 }
 
+/**
+ * open the server to listening new client connections
+ * and start the game loop (which keep sending out updates to all connected clients)
+ * @param game
+ */
 export function server(game){
 
     const port = game.options.port || Const.port;
@@ -74,20 +84,30 @@ export function server(game){
     });
 }
 
+/**
+ * Loop over maps and emits a message containing all new changes to all its clients.
+ * @param game
+ * @returns {Function}
+ */
 function updateWorld(game){
 
     return (fn) => {
 
         if(R.length(game.clients)){
 
-            for (let [id, map] of game.maps) {
+            const mapsWithClients = R.filter(map => map.getCharCount(), game.maps);
 
-                if (map.getCharCount() == 0) continue;
+            const messages = R.map(map => map.generateNetworkObjectData(), mapsWithClients);
 
-                game.debug(`Updating map ${id}`);
+            //R.forEach(client => client.client.socket.volatile.emit('update', messages), game.clients);
 
-                R.forEach(client => client.client.socket.volatile.emit('update', map.generateNetworkObjectData()), game.clients);
-            }
+            R.forEach(msg => {
+
+                game.debug(`Updating map ${msg.id}`);
+
+                R.forEach(client => client.client.socket.volatile.emit('update', msg), game.clients);
+
+            }, messages);
 
         }
 
