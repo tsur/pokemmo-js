@@ -19,7 +19,7 @@ class Main{
         }
 
         //const start = R.compose(dbConnector.connect, Game.server, Game.init);
-        const start = R.compose(Game.server, Game.init);
+        const start = R.compose(Game.start, Game.init);
 
         start(this);
     }

@@ -5,7 +5,7 @@ import fs from 'fs';
 import io from 'socket.io';
 import * as Util from './util.js';
 import * as Const from './const.js';
-import Map from './map.js';
+import GameMap from './map.js';
 import Client from './client.js';
 
 /**
@@ -47,7 +47,7 @@ export function init(game){
 
     game.info('Loaded experience data');
 
-    const maps = R.zipObj(Const.LOAD_MAPS, R.map(id => new Map(id), Const.LOAD_MAPS));
+    const maps = R.zipObj(Const.LOAD_MAPS, R.map(id => new GameMap(id), Const.LOAD_MAPS));
 
     game.debug(maps);
 
@@ -63,25 +63,38 @@ export function init(game){
  * and start the game loop (which keep sending out updates to all connected clients)
  * @param game
  */
-export function server(game){
+export function start(game){
 
-    const port = game.options.port || Const.port;
+    R.compose(Util.iterate(process.nextTick), updateWorld, startServer, setClients)(game);
 
-    game.info(`Listening to new connections on port ${port}`);
+}
+
+/**
+ *
+ * @param game
+ */
+function setClients(game){
 
     game.clients = [];
+
+    return game;
+}
+
+/**
+ *
+ * @param game
+ */
+function startServer(game){
+
+    const port = game.options.port || Const.port;
 
     const ioConnector = io.listen(port);
 
     ioConnector.sockets.on('connection', socket => game.clients.push(new Client(socket)));
 
-    const updateServerWorld = updateWorld(game);
+    game.info(`Listening to new connections on port ${port}`);
 
-    process.nextTick(function _update(){
-
-        updateServerWorld(_update);
-
-    });
+    return game;
 }
 
 /**
@@ -91,27 +104,26 @@ export function server(game){
  */
 function updateWorld(game){
 
-    return (fn) => {
+    const updateWorldLoop = () => {
 
-        if(R.length(game.clients)){
+        const mapsWithClients = R.filter(map => map.getCharCount(), game.maps);
 
-            const mapsWithClients = R.filter(map => map.getCharCount(), game.maps);
+        const messages = R.map(map => map.generateNetworkObjectData(), mapsWithClients);
 
-            const messages = R.map(map => map.generateNetworkObjectData(), mapsWithClients);
+        R.forEach(msg => {
 
-            //R.forEach(client => client.client.socket.volatile.emit('update', messages), game.clients);
+            game.debug(`Updating map ${msg.id}`);
 
-            R.forEach(msg => {
+            R.forEach(client => client.client.socket.volatile.emit('update', msg), game.clients);
 
-                game.debug(`Updating map ${msg.id}`);
+        }, messages);
+    };
 
-                R.forEach(client => client.client.socket.volatile.emit('update', msg), game.clients);
+    return next => {
 
-            }, messages);
+        if(R.length(game.clients)) updateWorldLoop();
 
-        }
-
-        process.nextTick(fn);
+        next();
 
     }
 

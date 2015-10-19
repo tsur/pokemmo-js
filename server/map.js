@@ -3,28 +3,26 @@
 import R from 'ramda';
 import * as Util from './util.js';
 
-export default class Map {
+export default class GameMap {
 
     constructor(id){
 
         this.id = id;
 
-        this.data = Util.loadFile(`${__dirname}/../site/resources/maps/${id}.json`, 'utf8');
+        this.data = Util.loadFile(`${__dirname}/../resources/maps/${id}.json`, 'utf8');
 
         this.warps= new Map();
         this.instances = new Map();
         this.points = new Map();
         this.encounterAreas = [];
 
-        //if (data.properties.players_per_instance == null) {
-        //    playersPerInstance = 0;
-        //}else{
-        //    playersPerInstance = Std.parseInt(data.properties.players_per_instance);
-        //}
-        //
-        //if (data.properties.grass_encounters != null) {
-        //    grassEncounters = Node.parse('{"tmp":['+ data.properties.grass_encounters + ']}').tmp;
-        //}
+        this.playersPerInstance = this.data.properties.players_per_instance == null ?
+            0 : parseInt(this.data.properties.players_per_instance);
+
+
+        if (this.data.properties.grass_encounters != null) {
+            this.grassEncounters = this.data.properties.grass_encounters;
+        }
 
         //for (layer in data.layers) {
         //    if (layer.type == LAYER_TILELAYER) {
