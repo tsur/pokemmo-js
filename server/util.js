@@ -32,3 +32,5 @@ export const iterate = iterator => g => {
     iterator(_iterate);
 
 };
+
+export const initMatrix = (value, w, h) => R.map(() => R.map(()=> value, R.range(0,h)), R.range(0,w));

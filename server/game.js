@@ -86,7 +86,7 @@ function setClients(game){
  */
 function startServer(game){
 
-    const port = game.options.port || Const.port;
+    const port = game.options.port || Const.PORT;
 
     const ioConnector = io.listen(port);
 
