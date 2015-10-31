@@ -2,6 +2,7 @@
 
 import R from 'ramda';
 import fs from 'fs';
+import crypto from 'crypto';
 
 /**
  *
@@ -33,4 +34,25 @@ export const iterate = iterator => g => {
 
 };
 
+/**
+ *
+ * @param value
+ * @param w
+ * @param h
+ */
 export const initMatrix = (value, w, h) => R.map(() => R.map(()=> value, R.range(0,h)), R.range(0,w));
+
+/**
+ *
+ * @param pass
+ * @param salt
+ */
+export function sha512(pass, salt) {
+
+    const hasher = crypto.createHash('sha512');
+
+    if (!salt) hasher.update(pass, 'ascii');
+    else hasher.update(`${pass}#${salt}`, 'ascii');
+
+    return hasher.digest('base64');
+}

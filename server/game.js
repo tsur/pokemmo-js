@@ -47,13 +47,13 @@ export function init(game){
 
     game.info('Loaded experience data');
 
-    const maps = R.zipObj(Const.LOAD_MAPS, R.map(id => new GameMap(id), Const.LOAD_MAPS));
+    const mapsData = R.zipObj(Const.LOAD_MAPS, R.map(id => new GameMap(id), Const.LOAD_MAPS));
 
-    game.debug(maps);
+    game.debug(mapsData);
 
     game.info('Loaded maps data');
 
-    game.data = {pokData, movesData, typesData, adminData, experienceData, maps};
+    game.data = {pokData, movesData, typesData, adminData, experienceData, mapsData};
 
     return game;
 }
@@ -90,7 +90,7 @@ function startServer(game){
 
     const ioConnector = io.listen(port);
 
-    ioConnector.sockets.on('connection', socket => game.clients.push(new Client(socket)));
+    ioConnector.sockets.on('connection', socket => game.clients.push(Client.call(game,socket)));
 
     game.info(`Listening to new connections on port ${port}`);
 
@@ -110,13 +110,13 @@ function updateWorld(game){
 
         const messages = R.map(map => map.generateNetworkObjectData(), mapsWithClients);
 
-        R.forEach(msg => {
+        for(let msg of messages){
 
             game.debug(`Updating map ${msg.id}`);
 
             R.forEach(client => client.client.socket.volatile.emit('update', msg), game.clients);
 
-        }, messages);
+        }
     };
 
     return next => {

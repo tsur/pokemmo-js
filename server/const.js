@@ -41,4 +41,8 @@ export const SD_GRASS= 7;
  * SERVER CONSTANTS
  * @type {number}
  */
+
+export const DB_HOST = '127.0.0.1';
+export const DB_PORT = 27017;
 export const PORT = 2828;
+export const MAX_CLIENTS= 100;

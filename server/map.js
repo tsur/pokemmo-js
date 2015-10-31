@@ -25,77 +25,55 @@ export default class GameMap {
         const tileLayers = R.filter(layer => layer.type == Const.LAYER_TILELAYER, this.data.layers);
         const objectLayers = R.filter(layer => layer.type == Const.LAYER_OBJECTGROUP, this.data.layers);
 
-        R.forEach(layer => {
+        for(let layer of tileLayers){
 
-            if (!layer.properties || layer.properties.data_layer != '1') return;
+            if (!layer.properties || layer.properties.data_layer != '1') continue;
 
             let j = 0;
 
             this.solidData = Util.initMatrix(Const.SD_NONE, this.data.width, this.data.height);
 
-            R.forEach(y => R.forEach(x => {
+            for(let y of R.range(0, this.data.height)){
 
-                const tileid = layer.data[j];
+                for(let x of R.range(0, this.data.width)){
 
-                if (!tileid) {
-                    ++j;
-                    return;
-                }
+                    const tileid = layer.data[++j];
 
-                const tileset = this.getTilesetOfTile(tileid);
+                    const curTilesetTileid = getTileProperties(this.getTilesetOfTile(tileid), tileid);
 
-                if (!tileset) return;
-
-                const curTilesetTileid = tileid - tileset.firstgid;
-
-                if(!tileset.tileproperties[curTilesetTileid]) return;
-
-                if(tileset.tileproperties[curTilesetTileid].solid == '1') this.solidData[x][y] = Const.SD_SOLID;
-                else if(tileset.tileproperties[curTilesetTileid].water == '1') this.solidData[x][y] = Const.SD_WATER;
-                else if(tileset.tileproperties[curTilesetTileid].grass == '1') this.solidData[x][y] = Const.SD_GRASS;
-                else if(tileset.tileproperties[curTilesetTileid].ledge == '1'){
-
-                    this.solidData[x][y] = Const.SD_LEDGE_DOWN;
-
-                    if(tileset.tileproperties[curTilesetTileid].ledge_dir == '1') this.solidData[x][y] = Const.SD_LEDGE_LEFT;
-                    else if(tileset.tileproperties[curTilesetTileid].ledge_dir == '2') this.solidData[x][y] = Const.SD_LEDGE_UP;
-                    else if(tileset.tileproperties[curTilesetTileid].ledge_dir == '3') this.solidData[x][y] = Const.SD_LEDGE_RIGHT;
+                    if(curTilesetTileid) this.solidData[x][y] = getSolidData(curTilesetTileid);
 
                 }
+            }
+        }
 
-                ++j;
+        for(let layer of objectLayers){
 
-            }, this.data.width), this.data.height);
+            for(let obj of layer.objects){
 
-        }, tileLayers);
+                const [x1, y1, x2, y2] = getObjectCoords(obj, this.data.tilewidth, this.data.tileheight);
 
-        R.forEach(layer => {
+                this.classifyObject(obj, x1, y1, x2, y2);
 
-            R.forEach(obj => {
+            }
+        }
 
-                const x1 = Math.round(obj.x / this.data.tilewidth);
-                const y1 = Math.round(obj.y / this.data.tileheight);
-                const x2 = Math.round((obj.x + obj.width) / this.data.tilewidth);
-                const y2 = Math.round((obj.y + obj.height) / this.data.tileheight);
+    }
 
-                switch(obj.type){
-                    case 'tall_grass':
-                        const encounters = obj.properties.encounters;
-                        this.encounterAreas.push({ x1:x1, y1:y1, x2:x2, y2:y2, encounters: encounters });
-                        break;
-                    case 'warp':
-                        this.warps.set(obj.name, {x: x1, y:y1, type: obj.properties.type, destination: obj.properties.destination});
-                        break;
-                    case 'point':
-                        this.points.set(obj.name, {mapName: id, x: x1, y: y1, direction: !obj.properties.direction ? Const.DIR_DOWN : obj.properties.direction});
-                        break;
-                    default: break;
-                }
+    classifyObject(obj, x1, y1, x2, y2){
 
-            }, layer.objects);
-
-        }, objectLayers);
-
+        switch(obj.type){
+            case 'tall_grass':
+                this.encounterAreas.push({ x1:x1, y1:y1, x2:x2, y2:y2, encounters: obj.properties.encounters });
+                break;
+            case 'warp':
+                this.warps.set(obj.name, {x: x1, y:y1, type: obj.properties.type, destination: obj.properties.destination});
+                break;
+            case 'point':
+                this.points.set(obj.name, {mapName: this.id, x: x1, y: y1, direction: !obj.properties.direction ? Const.DIR_DOWN : obj.properties.direction});
+                break;
+            default: break;
+        }
     }
 
     getEncounterAreasAt(x, y) {
@@ -116,11 +94,11 @@ export default class GameMap {
 
     getTilesetOfTile(n) {
 
+        if(!n) return;
+
         let i = R.length(this.data.tilesets);
 
         while (i-- > 0) if (n >= this.data.tilesets[i].firstgid) return this.data.tilesets[i];
-
-        return null;
     }
 
     getWarps(name){
@@ -128,4 +106,36 @@ export default class GameMap {
         return this.warps.get(name);
     }
 
+}
+
+function getObjectCoords(obj, tilewidth, tileheight){
+
+    const x1 = Math.round(obj.x / tilewidth);
+    const y1 = Math.round(obj.y / tileheight);
+    const x2 = Math.round((obj.x + obj.width) / tilewidth);
+    const y2 = Math.round((obj.y + obj.height) / tileheight);
+
+    return [x1, y1, x2, y2];
+}
+
+function getSolidData(tile){
+
+    if(tile.solid == '1') return Const.SD_SOLID;
+    else if(tile.water == '1') return Const.SD_WATER;
+    else if(tile.grass == '1') return Const.SD_GRASS;
+    else if(tile.ledge == '1'){
+
+        if(tile.ledge_dir == '1') return Const.SD_LEDGE_LEFT;
+        else if(tile.ledge_dir == '2') return Const.SD_LEDGE_UP;
+        else if(tile.ledge_dir == '3') return Const.SD_LEDGE_RIGHT;
+        else return Const.SD_LEDGE_DOWN;
+
+    }
+}
+
+function getTileProperties(tileset, tileid){
+
+    if(!tileset || !tileid) return;
+
+    return tileset.tileproperties[tileid - tileset.firstgid]
 }

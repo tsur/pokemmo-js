@@ -2,47 +2,34 @@
 
 import Log from 'loglevel';
 import R from 'ramda';
-import * as Game from './game.js';
-import * as dbConnector from './connector.js';
+import GameData from './game_data.js';
+import GameServer from './game_server.js';
+import Connector from './connector.js';
 
 class Main{
 
-    constructor(options){
+    static start(options={}){
 
-        this.options = options || {};
+        if(options.logger) startLogger(options.logger);
 
-        if(this.options.log){
-
-            Log.enableAll();
-
-            Log.setDefaultLevel(this.options.log);
-        }
-
-        //const start = R.compose(dbConnector.connect, Game.server, Game.init);
-        const start = R.compose(Game.start, Game.init);
-
-        start(this);
-    }
-
-    debug(data){
-
-        Log.debug(data);
-    }
-
-    info(data){
-
-        Log.info(data);
-    }
-
-    warn(data){
-
-        Log.warn(data);
-    }
-
-    error(error){
-
-        Log.error(error)
+        startGame(options);
     }
 }
 
-new Main({log:'info'});
+function startLogger(level='info'){
+
+    Log.enableAll();
+
+    Log.setDefaultLevel(level);
+
+}
+
+function startGame(config){
+
+    //const start = R.compose(dbConnector.connect, Game.server, Game.init);
+    const start = R.compose(Connector.connect(GameServer.start), GameData.init);
+
+    start(config);
+}
+
+Main.start({logger:'info', game:{}, db:{}, io:{}});

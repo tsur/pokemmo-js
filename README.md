@@ -26,6 +26,8 @@ server on `localhost:8000`, meaning you can simply go to the
 url [localhost:8000/index.htm](http://localhost:8000/index.htm)
 while it's running.
 
+Note: make sure mongodb database is running with ```npm run database```
+
 If you'd like to run the compiled version, run
 `grunt preview-live`.
 

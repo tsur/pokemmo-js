@@ -15,7 +15,9 @@
   "engines": {
     "node": ">=4"
   },
-  "dependencies": {},
+  "dependencies": {
+    "mongodb": "^2.0.47"
+  },
   "devDependencies": {
     "babel": "^5.4.7",
     "babel-runtime": "^5.8.20",
@@ -26,6 +28,7 @@
   "scripts": {
     "start": "npm install",
     "lint": "eslint --ext .es6 src",
+    "database": "mongod --config /usr/local/etc/mongod.conf --dbpath ./dbpath",
     "server": "babel-node --stage 0 server/main.js"
   },
   "config": {}

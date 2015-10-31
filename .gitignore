@@ -1,3 +1,4 @@
+# nodejs
 node_modules
 
 # npm
@@ -7,11 +8,11 @@ node_modules
 .vagrant
 
 # editors specific
-app/valo/
 **/.idea/
 *~
 *.swp
 *.swo
-app/public/dist
-app/browserify-cache.json
 *DS_Store
+
+# application
+dbpath
