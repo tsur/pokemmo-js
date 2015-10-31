@@ -21,6 +21,8 @@ export const LOAD_MAPS = [
     'pewter',
     'viridianforest'
 ];
+export const POKEMON_STARTERS = ["1", "4", "7", "10", "13", "16", "25", "29", "32", "43", "60", "66", "69", "74", "92", "133"];
+export const CHARACTER_SPRITES = ["red", "red_-135", "JZJot", "22jM7"];
 
 /**
  * MAP CONSTANTS

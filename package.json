@@ -28,7 +28,7 @@
   "scripts": {
     "start": "npm install",
     "lint": "eslint --ext .es6 src",
-    "database": "mongod --config /usr/local/etc/mongod.conf --dbpath ./dbpath",
+    "database": "mkdir dbpath && mongod --config /usr/local/etc/mongod.conf --dbpath ./dbpath",
     "server": "babel-node --stage 0 server/main.js"
   },
   "config": {}
