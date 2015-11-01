@@ -16,20 +16,22 @@
     "node": ">=4"
   },
   "dependencies": {
-    "mongodb": "^2.0.47"
+    "mongodb": "^2.0.47",
+    "socket.io": "^1.3.7"
   },
   "devDependencies": {
     "babel": "^5.4.7",
     "babel-runtime": "^5.8.20",
     "loglevel": "^1.4.0",
-    "ramda": "^0.17.1",
-    "socket.io": "^1.3.7"
+    "ramda": "^0.17.1"
   },
   "scripts": {
     "start": "npm install",
-    "lint": "eslint --ext .es6 src",
-    "database": "mkdir dbpath && mongod --config /usr/local/etc/mongod.conf --dbpath ./dbpath",
-    "server": "babel-node --stage 0 server/main.js"
+    "lint": "eslint --ext .js server/es6",
+    "database": "mongod --config /usr/local/etc/mongod.conf --dbpath ./dbpath",
+    "server:es6": "babel-node --stage 0 server/es6/main.js",
+    "server": "node dist/server.out.js",
+    "compile": "cd server/src && haxe -main pokemmo_s/Main.hx -lib nodejs -js ../../dist/server.out.js"
   },
   "config": {}
 }
